@@ -12,5 +12,8 @@
   },
   "keywords": [],
   "author": "Arina",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "prettier": "3.2.2"
+  }
 }
