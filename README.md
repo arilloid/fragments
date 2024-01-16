@@ -1,37 +1,31 @@
-# fragments
+# fragments - Cloud Computing for Programmers - Winter 2024
+## Lab 01 - Notes on the Scripts:
 
-Cloud Computing for Programmers (CCP555 - Winter 2024)
+- **lint**
 
-lab - 01
-
-##Notes on the Scripts:
-
-lint
-
-Executes the ESLint command.
+Executes the ESLint command.\
 Analyzes the code pointing out errors.
 
-terminal command - npm run lint
+`npm run lint`
 
-start
+- **start**
 
 Starts the server on http://localhost:8080.
 
-terminal command - npm start
+`npm start`
 
-dev
+- **dev**
 
-Starts the server on http://localhost:8080 via nodemon.
-(nodemon - a utility that watches the src/\*\* folder for changes ->
+Starts the server on http://localhost:8080 via nodemon.\
+(nodemon - a utility that watches the src/\*\* folder for changes ->\
 dev - restarts the server automatically whenever smth is updated/ start - launches normally (needs manual reloads) )
 
-terminal command - npm run dev
+`npm run dev`
 
-debug
+- **debug**
 
-The same as dev, but also starts a node inspector on port 9229.
+The same as dev, but also starts a node inspector on port 9229.\
 The running process needs to be attached for debugging.
 
-To debug through VSCode - press F5 / Run and Debug -> Run Script: debug
-
-! Don't forget to load the page to see the breakpoint get hit !
+To debug through VSCode - press F5 / Run and Debug -> Run Script: debug\
+***! Don't forget to load the page to see the breakpoint get hit !***
