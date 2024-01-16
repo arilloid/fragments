@@ -5,7 +5,10 @@
   "description": "this repo was created for Cloud Computing for Programmers course",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint --config .eslintrc.js \"./src/**/*.js\""
+    "lint": "eslint --config .eslintrc.js \"./src/**/*.js\"",
+    "start": "node src/server.js",
+    "dev": "cross-env LOG_LEVEL=debug nodemon ./src/server.js --watch src",
+    "debug": "cross-env LOG_LEVEL=debug nodemon --inspect=0.0.0.0:9229 ./src/server.js --watch src"
   },
   "repository": {
     "type": "git",
@@ -15,7 +18,9 @@
   "author": "Arina",
   "license": "UNLICENSED",
   "devDependencies": {
+    "cross-env": "7.0.3",
     "eslint": "^8.56.0",
+    "nodemon": "^3.0.2",
     "prettier": "3.2.2"
   },
   "dependencies": {
