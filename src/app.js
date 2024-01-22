@@ -29,6 +29,9 @@ app.use(cors());
 // Use gzip/deflate compression middleware
 app.use(compression());
 
+// Logging the environment variables
+// logger.debug({ environmentVariables: process.env });
+
 // Define a simple health check route. If the server is running
 // we'll respond with a 200 OK.  If not, the server isn't healthy.
 app.get('/', (req, res) => {
