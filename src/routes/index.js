@@ -3,6 +3,8 @@
 const express = require('express');
 //Authentication middleware
 const { authenticate } = require('../auth');
+// Response module
+const response = require('../response');
 
 // version and author from package.json
 const { version, author } = require('../../package.json');
@@ -25,13 +27,12 @@ router.get('/', (req, res) => {
   // Client's shouldn't cache this response (always request it fresh)
   res.setHeader('Cache-Control', 'no-cache');
   // Send a 200 'OK' response
-  res.status(200).json({
-    status: 'ok',
+  res.status(200).json(response.createSuccessResponse({
     author,
     // Use your own GitHub URL for this!
-    githubUrl: 'https://github.com/REPLACE_WITH_YOUR_GITHUB_USERNAME/fragments',
+    githubUrl: 'https://github.com/arilloid/fragments',
     version,
-  });
+  }));
 });
 
 module.exports = router;
