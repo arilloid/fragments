@@ -3,6 +3,7 @@
 const { randomUUID } = require('crypto');
 // Use https://www.npmjs.com/package/content-type to create/parse Content-Type headers
 const contentType = require('content-type');
+const logger = require('../logger');
 
 // Functions for working with fragment metadata/data using our DB
 const {
@@ -13,7 +14,7 @@ const {
   listFragments,
   deleteFragment,
 } = require('./data');
-const { error } = require('console');
+// const { error } = require('console');
 
 const validateDate = (dateString) => {
   if (!dateString) return true;
@@ -26,7 +27,6 @@ class Fragment {
     if (!type) throw new Error('type is required');
     if (!validateDate(created) || !validateDate(updated)) throw new Error('the passed date string is invalid');
     if (!Fragment.isSupportedType(type)) throw new Error(`the type: ${type} is not supported`);
-  
     if (typeof size != 'number' || size < 0) throw new Error('size must be a number > 0');
 
     this.id = id || randomUUID();
@@ -44,9 +44,14 @@ class Fragment {
    * @returns Promise<Array<Fragment>>
    */
   static async byUser(ownerId, expand = false) {
-    // TODO
+    try {
+      const fragments = await listFragments(ownerId, expand);
+      return fragments;
+    } catch (error) {
+      logger.error('Failed to retrieve fragments for user:', ownerId, error);
+      throw error; 
+    }
   }
-
   /**
    * Gets a fragment for the user by the given id.
    * @param {string} ownerId user's hashed email
@@ -54,7 +59,16 @@ class Fragment {
    * @returns Promise<Fragment>
    */
   static async byId(ownerId, id) {
-    // TODO
+    try {
+      const fragment = await readFragment(ownerId, id);
+      if (!fragment) {
+        throw new Error('Fragment not found');
+      }
+      return fragment;
+    } catch (error) {
+      logger.error('Failed to find fragment with the same owner and id:', ownerId, id, error);
+      throw error; 
+    }
   }
 
   /**
@@ -63,24 +77,51 @@ class Fragment {
    * @param {string} id fragment's id
    * @returns Promise<void>
    */
-  static delete(ownerId, id) {
-    // TODO
+  static async delete(ownerId, id) {
+    try {
+      await deleteFragment(ownerId, id);
+    } catch (error) {
+      logger.error('Failed to delete fragment with the same owner and id:', ownerId, id, error);
+      throw error; 
+    }
   }
 
   /**
    * Saves the current fragment to the database
    * @returns Promise<void>
    */
-  save() {
-    // TODO
+  async save() {
+    if (!this.id || !this.ownerId) {
+      throw new Error('Fragment must have an id and ownerId before saving');
+    }
+    
+    try {
+      // Directly use 'this' to pass the instance's current state
+      // Ensure that your db.save method can handle the instance's structure
+      this.updated = new Date().toISOString();
+      const res = await writeFragment(this);
+      logger.info(`Fragment ${this.id} saved successfully.`);
+      return res;
+    } catch (error) {
+      logger.error(`Failed to save fragment ${this.id}:`, error);
+      throw error; // Rethrow or handle as needed
+    }
   }
 
   /**
    * Gets the fragment's data from the database
    * @returns Promise<Buffer>
    */
-  getData() {
-    // TODO
+  async getData() {
+    try {
+      const data = await readFragmentData(this.ownerId, this.id);
+      if (!data) {
+        throw new Error('No data found');
+      }
+      return data;
+    } catch (error) {
+      throw new Error('Failed to get data');
+    }
   }
 
   /**
@@ -89,7 +130,16 @@ class Fragment {
    * @returns Promise<void>
    */
   async setData(data) {
-    // TODO
+    if (!data) {
+      throw new Error('Data is required');
+    }
+    try {
+      this.size += 1;
+      this.updated = new Date().toISOString();
+      await writeFragmentData(this.ownerId, this.id, data);
+    } catch (error) {
+      throw new Error('Failed to set data');
+    }
   }
 
   /**
@@ -107,7 +157,7 @@ class Fragment {
    * @returns {boolean} true if fragment's type is text/*
    */
   get isText() {
-    // TODO
+    return this.type.startsWith('text/');
   }
 
   /**
@@ -115,7 +165,11 @@ class Fragment {
    * @returns {Array<string>} list of supported mime types
    */
   get formats() {
-    // TODO
+    if (this.isText) {
+      const validFormats = ['text/plain', 'text/plain; charset=utf-8'];
+      return validFormats.filter(type => type !== this.type); 
+    }
+    return [];
   }
 
   /**
