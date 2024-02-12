@@ -25,7 +25,8 @@ class Fragment {
   constructor({ id, ownerId, created, updated, type, size = 0 }) {
     if (!ownerId) throw new Error('ownerId is required');
     if (!type) throw new Error('type is required');
-    if (!validateDate(created) || !validateDate(updated)) throw new Error('the passed date string is invalid');
+    if (!validateDate(created) || !validateDate(updated))
+      throw new Error('the passed date string is invalid');
     if (!Fragment.isSupportedType(type)) throw new Error(`the type: ${type} is not supported`);
     if (typeof size != 'number' || size < 0) throw new Error('size must be a number > 0');
 
@@ -44,14 +45,17 @@ class Fragment {
    * @returns Promise<Array<Fragment>>
    */
   static async byUser(ownerId, expand = false) {
-    try {
-      const fragments = await listFragments(ownerId, expand);
-      return fragments;
-    } catch (error) {
-      logger.error('Failed to retrieve fragments for user:', ownerId, error);
-      throw error; 
-    }
+    if (!ownerId) {
+      throw new Error('Owner ID is missing!');
+    } else
+      try {
+        return await listFragments(ownerId, expand);
+      } catch (error) {
+        logger.error('Failed to retrieve the fragments associated with the user');
+        throw error;
+      }
   }
+
   /**
    * Gets a fragment for the user by the given id.
    * @param {string} ownerId user's hashed email
@@ -59,16 +63,20 @@ class Fragment {
    * @returns Promise<Fragment>
    */
   static async byId(ownerId, id) {
-    try {
-      const fragment = await readFragment(ownerId, id);
-      if (!fragment) {
-        throw new Error('Fragment not found');
+    if (!ownerId || !id) {
+      throw new Error('Owner Id / Fragment id - missing!');
+    } else
+      try {
+        const fragment = await readFragment(ownerId, id);
+        if (!fragment) {
+          logger.error('Failed to find fragment with the same owner and id');
+          throw new Error('Fragment not found');
+        }
+        return fragment;
+      } catch (error) {
+        logger.error('Failed to retrieve the fragment');
+        throw error;
       }
-      return fragment;
-    } catch (error) {
-      logger.error('Failed to find fragment with the same owner and id:', ownerId, id, error);
-      throw error; 
-    }
   }
 
   /**
@@ -78,12 +86,16 @@ class Fragment {
    * @returns Promise<void>
    */
   static async delete(ownerId, id) {
-    try {
-      await deleteFragment(ownerId, id);
-    } catch (error) {
-      logger.error('Failed to delete fragment with the same owner and id:', ownerId, id, error);
-      throw error; 
-    }
+    if (!ownerId || !id) {
+      throw new Error('Owner Id / Fragment id - missing!');
+    } else
+      try {
+        await deleteFragment(ownerId, id);
+        logger.info(`Fragment ${this.id} deleted successfully`);
+      } catch (error) {
+        logger.error('Failed to delete fragment with the same owner and id:', ownerId, id, error);
+        throw error;
+      }
   }
 
   /**
@@ -91,20 +103,13 @@ class Fragment {
    * @returns Promise<void>
    */
   async save() {
-    if (!this.id || !this.ownerId) {
-      throw new Error('Fragment must have an id and ownerId before saving');
-    }
-    
     try {
-      // Directly use 'this' to pass the instance's current state
-      // Ensure that your db.save method can handle the instance's structure
       this.updated = new Date().toISOString();
-      const res = await writeFragment(this);
-      logger.info(`Fragment ${this.id} saved successfully.`);
-      return res;
+      await writeFragment(this);
+      logger.info(`Fragment ${this.id} saved successfully`);
     } catch (error) {
       logger.error(`Failed to save fragment ${this.id}:`, error);
-      throw error; // Rethrow or handle as needed
+      throw error;
     }
   }
 
@@ -116,29 +121,33 @@ class Fragment {
     try {
       const data = await readFragmentData(this.ownerId, this.id);
       if (!data) {
-        throw new Error('No data found');
+        logger.error("Failed to find fragment's data with the same owner and id");
+        throw new Error('Fragment Data not found');
       }
       return data;
     } catch (error) {
-      throw new Error('Failed to get data');
+      logger.error("Failed to retrieve fragment's data");
+      throw error;
     }
   }
 
   /**
-   * Set's the fragment's data in the database
+   * Sets the fragment's data in the database
    * @param {Buffer} data
    * @returns Promise<void>
    */
   async setData(data) {
     if (!data) {
-      throw new Error('Data is required');
+      throw new Error('No data passed!');
     }
     try {
-      this.size += 1;
+      this.size = Buffer.from(data).length;
       this.updated = new Date().toISOString();
       await writeFragmentData(this.ownerId, this.id, data);
+      logger.info(`${this.id} - Fragment's data saved successfully`);
     } catch (error) {
-      throw new Error('Failed to set data');
+      logger.error(`${this.id}  - Failed to save fragment's data:`, error);
+      throw error;
     }
   }
 
@@ -165,9 +174,10 @@ class Fragment {
    * @returns {Array<string>} list of supported mime types
    */
   get formats() {
+    // Only plain text is supported for now
     if (this.isText) {
       const validFormats = ['text/plain', 'text/plain; charset=utf-8'];
-      return validFormats.filter(type => type !== this.type); 
+      return validFormats.filter((type) => type !== this.type);
     }
     return [];
   }
