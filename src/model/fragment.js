@@ -14,19 +14,11 @@ const {
   listFragments,
   deleteFragment,
 } = require('./data');
-// const { error } = require('console');
-
-const validateDate = (dateString) => {
-  if (!dateString) return true;
-  if (!isNaN(Date.parse(dateString))) return false;
-};
 
 class Fragment {
   constructor({ id, ownerId, created, updated, type, size = 0 }) {
     if (!ownerId) throw new Error('ownerId is required');
     if (!type) throw new Error('type is required');
-    if (!validateDate(created) || !validateDate(updated))
-      throw new Error('the passed date string is invalid');
     if (!Fragment.isSupportedType(type)) throw new Error(`the type: ${type} is not supported`);
     if (typeof size != 'number' || size < 0) throw new Error('size must be a number > 0');
 
@@ -45,15 +37,12 @@ class Fragment {
    * @returns Promise<Array<Fragment>>
    */
   static async byUser(ownerId, expand = false) {
-    if (!ownerId) {
-      throw new Error('Owner ID is missing!');
-    } else
-      try {
-        return await listFragments(ownerId, expand);
-      } catch (error) {
-        logger.error('Failed to retrieve the fragments associated with the user');
-        throw error;
-      }
+    try {
+      return await listFragments(ownerId, expand);
+    } catch (error) {
+      logger.error('Failed to retrieve the fragments associated with the user');
+      throw error;
+    }
   }
 
   /**
@@ -63,20 +52,17 @@ class Fragment {
    * @returns Promise<Fragment>
    */
   static async byId(ownerId, id) {
-    if (!ownerId || !id) {
-      throw new Error('Owner Id / Fragment id - missing!');
-    } else
-      try {
-        const fragment = await readFragment(ownerId, id);
-        if (!fragment) {
-          logger.error('Failed to find fragment with the same owner and id');
-          throw new Error('Fragment not found');
-        }
-        return fragment;
-      } catch (error) {
-        logger.error('Failed to retrieve the fragment');
-        throw error;
+    try {
+      const fragment = await readFragment(ownerId, id);
+      if (!fragment) {
+        logger.error('Failed to find fragment with the same owner and id');
+        throw new Error('Fragment not found');
       }
+      return fragment;
+    } catch (error) {
+      logger.error('Failed to retrieve the fragment');
+      throw error;
+    }
   }
 
   /**
@@ -86,16 +72,13 @@ class Fragment {
    * @returns Promise<void>
    */
   static async delete(ownerId, id) {
-    if (!ownerId || !id) {
-      throw new Error('Owner Id / Fragment id - missing!');
-    } else
-      try {
-        await deleteFragment(ownerId, id);
-        logger.info(`Fragment ${this.id} deleted successfully`);
-      } catch (error) {
-        logger.error('Failed to delete fragment with the same owner and id:', ownerId, id, error);
-        throw error;
-      }
+    try {
+      await deleteFragment(ownerId, id);
+      logger.info(`Fragment ${this.id} deleted successfully`);
+    } catch (error) {
+      logger.error('Failed to delete fragment with the same owner and id:', ownerId, id, error);
+      throw error;
+    }
   }
 
   /**
