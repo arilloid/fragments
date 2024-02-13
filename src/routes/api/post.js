@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
     await fragment.save();
     // Saving the fragment's binary data
     await fragment.setData(req.body);
-    logger.info(`Fragment ${fragment.id} successfully saved.`);
+  
     res
       .set('Location', `${apiUrl}/v1/fragments/${fragment.id}`)
       .status(201)
