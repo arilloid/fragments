@@ -1,20 +1,20 @@
 // src/response.js
 
-// Function for creating successful responses
+// Create successful responses
 module.exports.createSuccessResponse = function (data) {
-    return {
-      status: 'ok',
-      ...data,
-    };
+  return {
+    status: 'ok',
+    ...data,
   };
-  
-  
-  module.exports.createErrorResponse = function (code, message) {
-    return {
-        status: "error",
-        "error": {
-            "code": code,
-            "message": message,
-        }
-    }
+};
+
+// Create erroneous responses 
+module.exports.createErrorResponse = function (code, message) {
+  return {
+    status: 'error',
+    error: {
+      code: code,
+      message: message,
+    },
   };
+};
