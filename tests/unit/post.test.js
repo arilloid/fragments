@@ -11,14 +11,18 @@ describe('POST /v1/fragments', () => {
     request(app).post('/v1/fragments').auth('email', 'password').expect(401));
 
   test('authenticated user can post a fragment, resulting in correct response', async () => {
+    const apiUrl = process.env.API_URL || 'http://localhost:8080';
+
     const res = await request(app)
       .post('/v1/fragments')
       .send('testing text')
       .set('Content-Type', 'text/plain')
       .auth('user1@email.com', 'password1')
       .expect(201);
-    expect(res.headers.location).toBeDefined();
+
+    expect(res.headers.location).toBe(`${apiUrl}/v1/fragments/${res.body.fragment.id}`);
     expect(res.body.status).toBe('ok');
+
     const fragment = await readFragment(res.body.fragment.ownerId, res.body.fragment.id);
     expect(res.body.fragment).toEqual(fragment);
   });
@@ -30,5 +34,14 @@ describe('POST /v1/fragments', () => {
       .set('Content-Type', 'text/html')
       .auth('user1@email.com', 'password1')
       .expect(415);
+  });
+
+  test('posting content of supported type with empty body results in 400', async () => {
+    await request(app)
+      .post('/v1/fragments')
+      .send(null)
+      .set('Content-Type', 'text/plain')
+      .auth('user1@email.com', 'password1')
+      .expect(400);
   });
 });
