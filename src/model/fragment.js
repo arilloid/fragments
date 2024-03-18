@@ -37,12 +37,7 @@ class Fragment {
    * @returns Promise<Array<Fragment>>
    */
   static async byUser(ownerId, expand = false) {
-    try {
       return await listFragments(ownerId, expand);
-    } catch (error) {
-      logger.error('Failed to retrieve the fragments associated with the user');
-      throw error;
-    }
   }
 
   /**
@@ -52,17 +47,12 @@ class Fragment {
    * @returns Promise<Fragment>
    */
   static async byId(ownerId, id) {
-    try {
-      const fragment = await readFragment(ownerId, id);
-      if (!fragment) {
-        logger.error('Failed to find fragment with the same owner and id');
-        throw new Error('Fragment not found');
-      }
-      return fragment;
-    } catch (error) {
-      logger.error('Failed to retrieve the fragment');
-      throw error;
+    const fragment = await readFragment(ownerId, id);
+    if (!fragment) {
+      logger.error('Failed to find fragment with the same owner and id');
+      throw new Error('Fragment not found');
     }
+    return fragment;
   }
 
   /**
@@ -72,13 +62,8 @@ class Fragment {
    * @returns Promise<void>
    */
   static async delete(ownerId, id) {
-    try {
       await deleteFragment(ownerId, id);
       logger.info(`Fragment ${this.id} deleted successfully`);
-    } catch (error) {
-      logger.error('Failed to delete fragment with the same owner and id:', ownerId, id, error);
-      throw error;
-    }
   }
 
   /**
@@ -86,14 +71,9 @@ class Fragment {
    * @returns Promise<void>
    */
   async save() {
-    try {
-      this.updated = new Date().toISOString();
-      await writeFragment(this);
-      logger.info(`Fragment ${this.id} saved successfully`);
-    } catch (error) {
-      logger.error(`Failed to save fragment ${this.id}:`, error);
-      throw error;
-    }
+    this.updated = new Date().toISOString();
+    await writeFragment(this);
+    logger.info(`Fragment ${this.id} saved successfully`);
   }
 
   /**
@@ -101,17 +81,8 @@ class Fragment {
    * @returns Promise<Buffer>
    */
   async getData() {
-    try {
       const data = await readFragmentData(this.ownerId, this.id);
-      if (!data) {
-        logger.error("Failed to find fragment's data with the same owner and id");
-        throw new Error('Fragment Data not found');
-      }
       return data;
-    } catch (error) {
-      logger.error("Failed to retrieve fragment's data");
-      throw error;
-    }
   }
 
   /**
@@ -123,15 +94,10 @@ class Fragment {
     if (!data) {
       throw new Error('No data passed!');
     }
-    try {
-      this.size = Buffer.from(data).length;
-      this.updated = new Date().toISOString();
-      await writeFragmentData(this.ownerId, this.id, data);
-      logger.info(`${this.id} - Fragment's data saved successfully`);
-    } catch (error) {
-      logger.error(`${this.id}  - Failed to save fragment's data:`, error);
-      throw error;
-    }
+    this.size = Buffer.from(data).length;
+    this.updated = new Date().toISOString();
+    await writeFragmentData(this.ownerId, this.id, data);
+    logger.info(`${this.id} - Fragment's data saved successfully`);
   }
 
   /**
