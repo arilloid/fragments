@@ -10,3 +10,4 @@ tests/
 .gitignore
 .prettier*
 jest*
+*md
