@@ -6,12 +6,11 @@ const wait = async (ms = 10) => new Promise((resolve) => setTimeout(resolve, ms)
 
 const validTypes = [
   `text/plain`,
-  /*
-   Currently, only text/plain is supported. Others will be added later.
-
   `text/markdown`,
   `text/html`,
   `application/json`,
+  /*
+   Currently, images are not supported. Image support will be added later.
   `image/png`,
   `image/jpeg`,
   `image/webp`,
@@ -167,6 +166,15 @@ describe('Fragment class', () => {
         size: 0,
       });
       expect(fragment.formats).toEqual(['text/plain']);
+    });
+
+    test('formats returns an empty array for MIME types without added conversion support', () => {
+      const fragment = new Fragment({
+        ownerId: '1234',
+        type: 'application/json',
+        size: 0,
+      });
+      expect(fragment.formats).toEqual([]);
     });
   });
 
