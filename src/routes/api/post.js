@@ -1,4 +1,4 @@
-const response = require('../../response');
+const { createSuccessResponse, createErrorResponse } = require('../../response');
 const { Fragment } = require('../../model/fragment');
 const logger = require('../../logger');
 const apiUrl = process.env.API_URL || 'http://localhost:8080';
@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
   logger.debug(`content type received: ${contentType}`);
 
   if (!Fragment.isSupportedType(req.get('Content-Type'))) {
-    return res.status(415).json(response.createErrorResponse(415, 'Content-Type is not supported'));
+    return res.status(415).send(createErrorResponse(415, 'Content-Type is not supported'));
   }
   try {
     const fragment = new Fragment({
@@ -22,13 +22,13 @@ module.exports = async (req, res) => {
     await fragment.save();
     // Saving the fragment's binary data
     await fragment.setData(req.body);
-  
+
     res
       .set('Location', `${apiUrl}/v1/fragments/${fragment.id}`)
       .status(201)
-      .send(response.createSuccessResponse({ fragment }));
+      .send(createSuccessResponse({ fragment }));
   } catch (error) {
     logger.error('Error saving fragment:', error);
-    res.status(400).send(response.createErrorResponse(400, error));
+    res.status(400).send(createErrorResponse(400, error));
   }
 };

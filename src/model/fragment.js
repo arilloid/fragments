@@ -37,7 +37,7 @@ class Fragment {
    * @returns Promise<Array<Fragment>>
    */
   static async byUser(ownerId, expand = false) {
-      return await listFragments(ownerId, expand);
+    return await listFragments(ownerId, expand);
   }
 
   /**
@@ -62,8 +62,8 @@ class Fragment {
    * @returns Promise<void>
    */
   static async delete(ownerId, id) {
-      await deleteFragment(ownerId, id);
-      logger.info(`Fragment ${this.id} deleted successfully`);
+    await deleteFragment(ownerId, id);
+    logger.info(`Fragment ${this.id} deleted successfully`);
   }
 
   /**
@@ -81,8 +81,8 @@ class Fragment {
    * @returns Promise<Buffer>
    */
   async getData() {
-      const data = await readFragmentData(this.ownerId, this.id);
-      return data;
+    const data = await readFragmentData(this.ownerId, this.id);
+    return data;
   }
 
   /**
@@ -123,12 +123,19 @@ class Fragment {
    * @returns {Array<string>} list of supported mime types
    */
   get formats() {
-    // Only plain text is supported for now
-    if (this.isText) {
-      const validFormats = ['text/plain', 'text/plain; charset=utf-8'];
-      return validFormats.filter((type) => type !== this.type);
+    // Only Markdown to HTML conversion is supported for now
+    const type = this.mimeType;
+    switch (type) {
+      case 'text/markdown':
+        return ['text/markdown', 'text/html', 'text/plain'];
+
+      case 'text/plain':
+        return ['text/plain'];
+
+      default:
+        logger.error(`${this.mimeType} file type is not supported`);
+        return [];
     }
-    return [];
   }
 
   /**
@@ -137,7 +144,13 @@ class Fragment {
    * @returns {boolean} true if we support this Content-Type (i.e., type/subtype)
    */
   static isSupportedType(value) {
-    const validTypes = ['text/plain', 'text/plain; charset=utf-8'];
+    const validTypes = [
+      'text/plain',
+      'text/plain; charset=utf-8',
+      'text/markdown',
+      'text/html',
+      'application/json',
+    ];
     return validTypes.includes(value);
   }
 }
