@@ -1,5 +1,6 @@
 // src/routes/index.js
 
+const { hostname } = require('os');
 const express = require('express');
 //Authentication middleware
 const { authenticate } = require('../auth');
@@ -32,6 +33,8 @@ router.get('/', (req, res) => {
     // Use your own GitHub URL for this!
     githubUrl: 'https://github.com/arilloid/fragments',
     version,
+    // Include the hostname in the response
+    hostname: hostname(),
   }));
 });
 
