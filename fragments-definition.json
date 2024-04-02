@@ -28,6 +28,10 @@
                 {
                     "name": "API_URL",
                     "value": "http://fragments-lb-1638933129.us-east-1.elb.amazonaws.com"
+                },
+                {
+                    "name": "AWS_S3_BUCKET_NAME",
+                    "value": "akolodeznikova-fragments"
                 }
             ],
             "environmentFiles": [],
