@@ -63,7 +63,7 @@ class Fragment {
    */
   static async delete(ownerId, id) {
     await deleteFragment(ownerId, id);
-    logger.info(`Fragment ${this.id} deleted successfully`);
+    logger.info(`Fragment ${id} deleted successfully`);
   }
 
   /**
