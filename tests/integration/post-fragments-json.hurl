@@ -1,7 +1,7 @@
 # tests/integration/post-fragments-json.hurl
 # Authenticated POST to /v1/fragments
 POST http://localhost:8080/v1/fragments
-# We're sending a plain text fragment
+# We're sending a JSON fragment
 Content-Type: application/json
 # Include HTTP Basic Auth credentials
 [BasicAuth]
