@@ -47,12 +47,12 @@ class Fragment {
    * @returns Promise<Fragment>
    */
   static async byId(ownerId, id) {
-    const fragment = await readFragment(ownerId, id);
-    if (!fragment) {
+    const fragmentMetadata = await readFragment(ownerId, id);
+    if (!fragmentMetadata) {
       logger.error('Failed to find fragment with the same owner and id');
       throw new Error('Fragment not found');
     }
-    return fragment;
+    return new Fragment(fragmentMetadata);
   }
 
   /**
