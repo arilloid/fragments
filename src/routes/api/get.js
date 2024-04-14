@@ -17,6 +17,6 @@ module.exports = async (req, res) => {
     res.status(200).send(createSuccessResponse({ fragments }));
     logger.info(`User's fragment list has been retrieved successfully`, { fragments });
   } catch (err) {
-    res.status(404).send(createErrorResponse(404, err));
+    res.status(500).send(createErrorResponse(404, err));
   }
 };
