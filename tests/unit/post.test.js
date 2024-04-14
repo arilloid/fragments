@@ -9,7 +9,13 @@ describe('POST /v1/fragments', () => {
     'text/plain; charset=utf-8',
     'text/markdown',
     'text/html',
+    'text/csv',
     'application/json',
+    'image/png',
+    'image/jpeg',
+    'image/webp',
+    'image/avif',
+    'image/gif'
   ];
 
   test('unauthenticated requests result in 401', () =>
@@ -41,7 +47,7 @@ describe('POST /v1/fragments', () => {
     await request(app)
       .post('/v1/fragments')
       .send('invalid type data')
-      .set('Content-Type', 'image/png')
+      .set('Content-Type', 'invalid/type')
       .auth('user1@email.com', 'password1')
       .expect(415);
   });

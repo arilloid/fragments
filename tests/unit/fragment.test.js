@@ -167,15 +167,6 @@ describe('Fragment class', () => {
       });
       expect(fragment.formats).toEqual(['text/plain']);
     });
-
-    test('formats returns an empty array for MIME types without added conversion support', () => {
-      const fragment = new Fragment({
-        ownerId: '1234',
-        type: 'application/json',
-        size: 0,
-      });
-      expect(fragment.formats).toEqual([]);
-    });
   });
 
   describe('save(), getData(), setData(), byId(), byUser(), delete()', () => {
