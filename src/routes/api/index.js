@@ -25,7 +25,7 @@ const rawBody = () =>
     },
   });
 
-// Define our first route, which will be: GET /v1/fragments
+// GET /v1/fragments
 router.get('/fragments', require('./get'));
 
 // GET /v1/fragments/:id
@@ -37,7 +37,8 @@ router.get('/fragments/:id/info', require('./getInfoById'));
 // POST /v1/fragments
 router.post('/fragments', rawBody(), require('./post'));
 
-// Other routes (DELETE etc.) will go here later on...
+// PUT /v1/fragments/:id
+router.put('/fragments/:id', rawBody(), require('./updateFragmentById'));
 
 // DELETE /v1/fragments/:id
 router.delete('/fragments/:id', require('./deleteFragmentById'));
