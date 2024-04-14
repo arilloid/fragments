@@ -37,8 +37,10 @@
     "compression": "^1.7.4",
     "content-type": "^1.0.5",
     "cors": "^2.8.5",
+    "csv-parse": "^5.5.5",
     "dotenv": "^16.3.2",
     "express": "^4.18.2",
+    "fs": "^0.0.1-security",
     "helmet": "^7.1.0",
     "http-auth": "^4.2.0",
     "http-auth-passport": "^1.0.7",
@@ -49,6 +51,7 @@
     "pino": "^8.17.2",
     "pino-http": "^9.0.0",
     "pino-pretty": "^10.3.1",
+    "sharp": "^0.33.3",
     "stoppable": "^1.1.0"
   }
 }
