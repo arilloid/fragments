@@ -123,19 +123,32 @@ class Fragment {
    * @returns {Array<string>} list of supported mime types
    */
   get formats() {
-    // Only Markdown to HTML conversion is supported for now
+    let result = [];
     const type = this.mimeType;
-    switch (type) {
-      case 'text/markdown':
-        return ['text/markdown', 'text/html', 'text/plain'];
 
-      case 'text/plain':
-        return ['text/plain'];
-
-      default:
-        logger.error(`${this.mimeType} file type is not supported`);
-        return [];
+    if (
+      type === 'image/png' ||
+      type === 'image/jpeg' ||
+      type === 'image/webp' ||
+      type === 'image/avif'||
+      type === 'image/gif'
+    ) {
+      result = ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/avif'];
+    } else if (type === 'text/plain') {
+      result = ['text/plain'];
+    } else if (type === 'text/markdown') {
+      result = ['text/markdown', 'text/html', 'text/plain'];
+    } else if (type === 'text/html') {
+      result = ['text/html', 'text/plain'];
+    } else if (type === 'text/csv') {
+      result = ['text/csv', 'text/plain'];
+    } else if (type === 'application/json') {
+      result = ['application/json', 'text/plain'];
+    } else {
+      logger.error(`${this.mimeType} file type is not supported`);
     }
+
+    return result;
   }
 
   /**
@@ -144,13 +157,21 @@ class Fragment {
    * @returns {boolean} true if we support this Content-Type (i.e., type/subtype)
    */
   static isSupportedType(value) {
+
     const validTypes = [
       'text/plain',
       'text/plain; charset=utf-8',
       'text/markdown',
       'text/html',
+      'text/csv',
       'application/json',
+      'image/png',
+      'image/jpeg',
+      'image/webp',
+      'image/avif',
+      'image/gif'
     ];
+
     return validTypes.includes(value);
   }
 }
