@@ -7,8 +7,8 @@ Content-Type: image/png
 [BasicAuth]
 user1@email.com:password1
 
-# 1. We expect to get back an HTTP 415
-HTTP/1.1 415
+# 1. We expect to get back an HTTP 400
+HTTP/1.1 400
 
 [Asserts]
 # We expect to get back a JSON response with { "status": "error", ... }

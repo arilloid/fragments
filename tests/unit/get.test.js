@@ -103,7 +103,7 @@ describe('Testing GET requests', () => {
           .post('/v1/fragments/')
           .auth('user1@email.com', 'password1')
           .set('Content-Type', 'image/jpeg')
-          .send(fs.readFileSync(`${__dirname}/../test-assets/pikachu.jpg`));
+          .send(fs.readFileSync(`${__dirname}/../test-assets/star.jpg`));
         jpegFragmentId = postRes.body.fragment.id;
       });
 
@@ -112,7 +112,7 @@ describe('Testing GET requests', () => {
           .post('/v1/fragments/')
           .auth('user1@email.com', 'password1')
           .set('Content-Type', 'image/png')
-          .send(fs.readFileSync(`${__dirname}/../test-assets/pikachu.png`));
+          .send(fs.readFileSync(`${__dirname}/../test-assets/star.png`));
 
         const getRes = await request(app)
           .get(`/v1/fragments/${postPngRes.body.fragment.id}.jpg`)
@@ -146,8 +146,7 @@ describe('Testing GET requests', () => {
       });
 
       test('GET /v1/fragments/:id.ext - able to convert from JPEG to AVIF', async () => {
-        const getRes = await request(app)
-          .get(`/v1/fragments/${jpegFragmentId}.avif`)
+        const getRes = await request(app).get(`/v1/fragments/${jpegFragmentId}.avif`)
           .auth('user1@email.com', 'password1');
         expect(getRes.statusCode).toBe(200);
         expect(getRes.type).toEqual('image/avif');
