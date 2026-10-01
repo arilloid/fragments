@@ -43,7 +43,7 @@ To set up this project locally:
 
    ```bash
    git clone https://github.com/arilloid/fragments.git
-   cd fragments-Microservices
+   cd fragments
    ```
 
 2. **Install Dependencies:**
